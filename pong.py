@@ -3,12 +3,18 @@
 # Written by TheTrueOryx
 
 import turtle
+import winsound
 
 #Constants
 SCNWID = 800
 SCNHGT = 600
 PADDLELOC = SCNWID/2*0.875
+PADDLESPD = 20
 BALLSPD = 0.5
+
+#Variables
+score_a = 0
+score_b = 0
 
 #Defining the window
 wn = turtle.Screen() #Screen Object
@@ -45,25 +51,34 @@ ball.goto(0,0) #inital location from center
 ball.dx = BALLSPD
 ball.dy = BALLSPD
 
+# Pen (Score)
+pen = turtle.Turtle()
+pen.speed(0)
+pen.color("white")
+pen.penup()
+pen.hideturtle()
+pen.goto(0,SCNHGT/2*12/15)
+pen.write("Player A: {}   Player B: {}".format(score_a, score_b), align="center", font=("Courier", 24, "normal"))
+
 #Movement Function
 def paddle_a_up():
     y = paddle_a.ycor() #Use .ycor() to get paddle_a's y coordinate
-    y += 20
+    y += PADDLESPD
     paddle_a.sety(y) #Set paddle_a's y coordinate to the new value
 
 def paddle_a_down():
     y = paddle_a.ycor() #Use .ycor() to get paddle_a's y coordinate
-    y -= 20
+    y -= PADDLESPD
     paddle_a.sety(y) #Set paddle_a's y coordinate to the new value
 
 def paddle_b_up():
     y = paddle_b.ycor() #Use .ycor() to get paddle_b's y coordinate
-    y += 20
+    y += PADDLESPD
     paddle_b.sety(y) #Set paddle_b's y coordinate to the new value
 
 def paddle_b_down():
     y = paddle_b.ycor() #Use .ycor() to get paddle_b's y coordinate
-    y -= 20
+    y -= PADDLESPD
     paddle_b.sety(y) #Set paddle_b's y coordinate to the new value
 
 #Keyboard binding
@@ -85,24 +100,34 @@ while True:
     if ball.ycor() > SCNHGT/2-10:
         ball.sety(SCNHGT/2-10)
         ball.dy *= -1
+        winsound.PlaySound("bounce.wav", winsound.SND_ASYNC)
 
     if ball.ycor() < -SCNHGT/2+10:
         ball.sety(-SCNHGT/2+10)
         ball.dy *= -1
+        winsound.PlaySound("bounce.wav", winsound.SND_ASYNC)
 
     if ball.xcor() > SCNWID/2-10:
         ball.goto(0,0)
         ball.dx *= -1
+        score_a += 1
+        pen.clear() #Clear the screen
+        pen.write("Player A: {}   Player B: {}".format(score_a, score_b), align="center", font=("Courier", 24, "normal")) #write updated score
 
     if ball.xcor() < -SCNWID/2+10:
         ball.goto(0,0)
         ball.dx *= -1
+        score_b += 1
+        pen.clear()
+        pen.write("Player A: {}   Player B: {}".format(score_a, score_b), align="center", font=("Courier", 24, "normal"))
 
     #Paddle and ball collisions
     if (ball.xcor() > PADDLELOC-10 and ball.xcor() < PADDLELOC) and (ball.ycor() < paddle_b.ycor()+50 and ball.ycor() > paddle_b.ycor()-50):
         ball.setx(PADDLELOC-10)
         ball.dx *= -1
+        winsound.PlaySound("bounce.wav", winsound.SND_ASYNC)
 
     if (ball.xcor() < -PADDLELOC+10 and ball.xcor() > -PADDLELOC) and (ball.ycor() < paddle_a.ycor()+50 and ball.ycor() > paddle_a.ycor()-50):
         ball.setx(-PADDLELOC+10)
         ball.dx *= -1
+        winsound.PlaySound("bounce.wav", winsound.SND_ASYNC)
