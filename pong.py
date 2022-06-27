@@ -4,11 +4,17 @@
 
 import turtle
 
+#Constants
+SCNWID = 800
+SCNHGT = 600
+PADDLELOC = SCNWID/2*0.875
+BALLSPD = 0.5
+
 #Defining the window
 wn = turtle.Screen() #Screen Object
 wn.title("Pong by TheTrueOryx") #Title
 wn.bgcolor("black") #Background Color 
-wn.setup(width=800, height=600) #Size of window
+wn.setup(width=SCNWID, height=SCNHGT) #Size of window
 wn.tracer(0) #Update frequency - set to zero so that it can be updated during gameplay
 
 #Paddle A
@@ -18,7 +24,7 @@ paddle_a.shape("square")
 paddle_a.color("white")
 paddle_a.shapesize(stretch_wid=5,stretch_len=1)
 paddle_a.penup() #Do not draw a line as the object moves
-paddle_a.goto(-350,0) #inital location from center
+paddle_a.goto(-PADDLELOC,0) #inital location from center
 
 #Paddle B
 paddle_b = turtle.Turtle()
@@ -27,7 +33,7 @@ paddle_b.shape("square")
 paddle_b.color("white")
 paddle_b.shapesize(stretch_wid=5,stretch_len=1)
 paddle_b.penup() #Do not draw a line as the object moves
-paddle_b.goto(350,0) #inital location from center
+paddle_b.goto(PADDLELOC,0) #inital location from center
 
 #Ball
 ball = turtle.Turtle()
@@ -36,6 +42,8 @@ ball.shape("square")
 ball.color("white")
 ball.penup() #Do not draw a line as the object moves
 ball.goto(0,0) #inital location from center
+ball.dx = BALLSPD
+ball.dy = BALLSPD
 
 #Movement Function
 def paddle_a_up():
@@ -68,3 +76,33 @@ wn.onkeypress(paddle_b_down,"Down") #When "Down" is pressed, do paddle_b_down
 #Main game loop
 while True:
     wn.update()
+
+    #Move the ball
+    ball.setx(ball.xcor() + ball.dx)
+    ball.sety(ball.ycor() + ball.dy)
+
+    #Border checking
+    if ball.ycor() > SCNHGT/2-10:
+        ball.sety(SCNHGT/2-10)
+        ball.dy *= -1
+
+    if ball.ycor() < -SCNHGT/2+10:
+        ball.sety(-SCNHGT/2+10)
+        ball.dy *= -1
+
+    if ball.xcor() > SCNWID/2-10:
+        ball.goto(0,0)
+        ball.dx *= -1
+
+    if ball.xcor() < -SCNWID/2+10:
+        ball.goto(0,0)
+        ball.dx *= -1
+
+    #Paddle and ball collisions
+    if (ball.xcor() > PADDLELOC-10 and ball.xcor() < PADDLELOC) and (ball.ycor() < paddle_b.ycor()+50 and ball.ycor() > paddle_b.ycor()-50):
+        ball.setx(PADDLELOC-10)
+        ball.dx *= -1
+
+    if (ball.xcor() < -PADDLELOC+10 and ball.xcor() > -PADDLELOC) and (ball.ycor() < paddle_a.ycor()+50 and ball.ycor() > paddle_a.ycor()-50):
+        ball.setx(-PADDLELOC+10)
+        ball.dx *= -1
